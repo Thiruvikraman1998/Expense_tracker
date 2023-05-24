@@ -1,3 +1,4 @@
+import 'package:expenses_tracker_app/models/expense_model.dart';
 import 'package:flutter/material.dart';
 
 class InputModalView extends StatefulWidget {
@@ -11,6 +12,27 @@ class _InputModalViewState extends State<InputModalView> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
+  DateTime? _selectedDate;
+
+  // Future object//
+  void _openDatePicker() async {
+    final dateTimeNow = DateTime.now();
+    final firstDate =
+        DateTime(dateTimeNow.year - 1, dateTimeNow.month, dateTimeNow.day);
+    final pickedDate = await showDatePicker(
+        context: context,
+        initialDate: dateTimeNow,
+        firstDate: firstDate,
+        lastDate: dateTimeNow);
+
+    // dateTimeNow - to place the marker on the today's date.
+    // dateTimeNow.year - 1 : this logic is written to make the date picker to show past 1 year dates to pick and mark the expenses any if we did missed earlier.
+
+    setState(() {
+      _selectedDate = pickedDate;
+    });
+  }
+
   // dispose() method is important because if we didnt dispose the controller, then the values stored in the variable will consume memory all the time even if the modalsheet is closed, this might affect the app smoothness. we use this dispose in more places like text fields animations and so on.
   @override
   void dispose() {
@@ -23,26 +45,76 @@ class _InputModalViewState extends State<InputModalView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: [
+          Container(
+            height: 6,
+            width: 50,
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5),
+                ),
+                color: Colors.grey),
+          ),
+          const SizedBox(height: 30),
           TextField(
             controller: _titleController,
             maxLength: 50,
             decoration: const InputDecoration(
+              hintText: 'Enter a title',
               label: Text("Title"),
             ),
           ),
           Row(
             children: [
-              TextField(
-                controller: _amountController,
-                decoration: const InputDecoration(
-                  label: Text("Title"),
+              // here we are wrapping both the children with expanded as the text field takes all the width, so it throws error while we insert other childrens with them.
+              Expanded(
+                child: TextField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    prefix: Text('₹ '),
+                    hintText: 'Enter an amount',
+                    label: Text("Amount"),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      _selectedDate == null
+                          ? "Select a date"
+                          : formatter.format(_selectedDate!),
+                    ),
+                    IconButton(
+                      onPressed: _openDatePicker,
+                      icon: const Icon(Icons.calendar_month_rounded),
+                    )
+                  ],
                 ),
               )
             ],
-          )
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(onPressed: () {}, child: const Text("Save Data"))
+            ],
+          ),
         ],
       ),
     );

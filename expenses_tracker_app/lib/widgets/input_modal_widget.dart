@@ -13,6 +13,7 @@ class _InputModalViewState extends State<InputModalView> {
   final TextEditingController _amountController = TextEditingController();
 
   DateTime? _selectedDate;
+  Category _selectedCategory = Category.food;
 
   // Future object//
   void _openDatePicker() async {
@@ -105,14 +106,40 @@ class _InputModalViewState extends State<InputModalView> {
             height: 20,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(onPressed: () {}, child: const Text("Save Data"))
+              DropdownButton(
+                  value: _selectedCategory,
+                  items: Category.values
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(
+                              category.name.toUpperCase(),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text("Save Data"),
+                  )
+                ],
+              )
             ],
           ),
         ],

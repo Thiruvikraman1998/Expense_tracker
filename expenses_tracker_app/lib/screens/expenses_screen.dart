@@ -1,5 +1,6 @@
 import 'package:expenses_tracker_app/models/expense_model.dart';
 import 'package:expenses_tracker_app/widgets/expense_list_widget.dart';
+import 'package:expenses_tracker_app/widgets/input_modal_widget.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseScreen extends StatefulWidget {
@@ -27,12 +28,31 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         date: DateTime.now(),
         category: Category.food)
   ];
+
+  void _openInputFields() {
+    showModalBottomSheet(
+      context: context,
+      builder: (modalSheetContext) {
+        return const InputModalView();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        title: const Text("Expenses Tracker"),
+        title: const Text(
+          "Expenses Tracker",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            onPressed: _openInputFields,
+            icon: const Icon(Icons.add),
+            color: Colors.black,
+          ),
+        ],
       ),
       body: Column(
         children: [

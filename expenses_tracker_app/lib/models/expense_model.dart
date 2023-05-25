@@ -19,7 +19,7 @@ enum Category {
 // mapping the enum keys to the icon values.
 const categoryIcons = {
   Category.food: Icons.fastfood_rounded,
-  Category.travel: Icons.airplane_ticket_rounded,
+  Category.travel: Icons.flight_takeoff_rounded,
   Category.entertainment: Icons.movie_filter,
   Category.medical: Icons.medical_services,
   Category.misc: Icons.miscellaneous_services_outlined

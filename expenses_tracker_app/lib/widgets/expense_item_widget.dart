@@ -24,7 +24,7 @@ class ExpenseItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "\$ ${expense.amount.toStringAsFixed(2)}",
+                  "₹ ${expense.amount.toStringAsFixed(2)}",
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.w600),
                 ),

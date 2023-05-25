@@ -2,7 +2,8 @@ import 'package:expenses_tracker_app/models/expense_model.dart';
 import 'package:flutter/material.dart';
 
 class InputModalView extends StatefulWidget {
-  const InputModalView({super.key});
+  final void Function(Expense expense) saveExpenseData;
+  const InputModalView({super.key, required this.saveExpenseData});
 
   @override
   State<InputModalView> createState() => _InputModalViewState();
@@ -43,21 +44,46 @@ class _InputModalViewState extends State<InputModalView> {
     super.dispose();
   }
 
+  void _validationSubmission() {
+    final _enteredAmount = double.tryParse(_amountController.text);
+    final invalidAmount = _enteredAmount == null || _enteredAmount <= 0;
+
+    if (_titleController.text.isEmpty ||
+        invalidAmount ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (dialogBoxContext) {
+          return AlertDialog(
+            title: const Text("Invalid Input"),
+            content: const Text(
+                "Check whether entered title, amount, date, and category are valid."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogBoxContext);
+                },
+                child: const Text("Okay"),
+              )
+            ],
+          );
+        },
+      );
+      return;
+    }
+    widget.saveExpenseData(Expense(
+        title: _titleController.text,
+        amount: _enteredAmount,
+        date: _selectedDate!,
+        category: _selectedCategory));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       child: Column(
         children: [
-          Container(
-            height: 6,
-            width: 50,
-            decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5),
-                ),
-                color: Colors.grey),
-          ),
           const SizedBox(height: 30),
           TextField(
             controller: _titleController,
@@ -135,7 +161,7 @@ class _InputModalViewState extends State<InputModalView> {
                     child: const Text("Cancel"),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _validationSubmission,
                     child: const Text("Save Data"),
                   )
                 ],

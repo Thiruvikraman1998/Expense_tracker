@@ -12,21 +12,21 @@ class ExpenseScreen extends StatefulWidget {
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
   final List<Expense> _savedExpense = [
-    // Expense(
-    //     title: 'Bag',
-    //     amount: 25.5,
-    //     date: DateTime.now(),
-    //     category: Category.misc),
-    // Expense(
-    //     title: 'Movie',
-    //     amount: 50,
-    //     date: DateTime.now(),
-    //     category: Category.entertainment),
-    // Expense(
-    //     title: 'Dominos',
-    //     amount: 100.8,
-    //     date: DateTime.now(),
-    //     category: Category.food)
+    Expense(
+        title: 'Bag',
+        amount: 25.5,
+        date: DateTime.now(),
+        category: Category.misc),
+    Expense(
+        title: 'Movie',
+        amount: 50,
+        date: DateTime.now(),
+        category: Category.entertainment),
+    Expense(
+        title: 'Dominos',
+        amount: 100.8,
+        date: DateTime.now(),
+        category: Category.food)
   ];
 
   void _openInputFields() {
@@ -46,9 +46,24 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   }
 
   void _removeExpenseData(Expense expense) {
+    final expenseIndex = _savedExpense.indexOf(expense);
     setState(() {
       _savedExpense.remove(expense);
     });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text("Expense deleted"),
+        action: SnackBarAction(
+          label: 'undo',
+          onPressed: () {
+            setState(() {
+              _savedExpense.insert(expenseIndex, expense);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override

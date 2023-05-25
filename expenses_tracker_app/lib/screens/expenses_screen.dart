@@ -12,21 +12,21 @@ class ExpenseScreen extends StatefulWidget {
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
   final List<Expense> _savedExpense = [
-    Expense(
-        title: 'Bag',
-        amount: 25.5,
-        date: DateTime.now(),
-        category: Category.misc),
-    Expense(
-        title: 'Movie',
-        amount: 50,
-        date: DateTime.now(),
-        category: Category.entertainment),
-    Expense(
-        title: 'Dominos',
-        amount: 100.8,
-        date: DateTime.now(),
-        category: Category.food)
+    // Expense(
+    //     title: 'Bag',
+    //     amount: 25.5,
+    //     date: DateTime.now(),
+    //     category: Category.misc),
+    // Expense(
+    //     title: 'Movie',
+    //     amount: 50,
+    //     date: DateTime.now(),
+    //     category: Category.entertainment),
+    // Expense(
+    //     title: 'Dominos',
+    //     amount: 100.8,
+    //     date: DateTime.now(),
+    //     category: Category.food)
   ];
 
   void _openInputFields() {
@@ -43,6 +43,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     setState(() {
       _savedExpense.add(expense);
     });
+    Navigator.pop(context);
   }
 
   void _removeExpenseData(Expense expense) {
@@ -86,8 +87,14 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         children: [
           const Text("Expenses Chart"),
           Expanded(
-              child: ExpensesList(
-                  expenses: _savedExpense, removeListItem: _removeExpenseData))
+            child: _savedExpense.isEmpty
+                ? const Center(
+                    child: Text("Add your first expense..."),
+                  )
+                : ExpensesList(
+                    expenses: _savedExpense,
+                    removeListItem: _removeExpenseData),
+          )
         ],
       ),
     );

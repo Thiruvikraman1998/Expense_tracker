@@ -44,3 +44,27 @@ class Expense {
     return formatter.format(date);
   } // we can use method getter, anything is fine in this case.
 }
+
+// creating a new class to work with charts
+
+class ChartBucket {
+  final Category category;
+  final List<Expense> expenses;
+
+  ChartBucket({required this.category, required this.expenses});
+
+// creating a named constructer that takes list expenses and category and filters to the exact category
+  ChartBucket.filterCategory(List<Expense> allExpenses, this.category)
+      : expenses = allExpenses
+            .where((expense) => expense.category == category)
+            .toList();
+// checks and filters according to the category,if the selected category by user is equal to the category in the chart then it gets added to the category in the chart, if the condition becomes false then it checks for other.
+
+  double get totlaExpense {
+    double sum = 0;
+    for (final expense in expenses) {
+      sum += expense.amount;
+    }
+    return sum;
+  }
+}

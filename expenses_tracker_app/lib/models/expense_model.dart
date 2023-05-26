@@ -13,7 +13,8 @@ enum Category {
   travel,
   entertainment,
   medical,
-  misc
+  misc,
+  education
 } // we use enum bcos we can actually pass a string to a constructor, but we might face typo error, so it will be easier to maintain if we use a enum of categories here.
 
 // mapping the enum keys to the icon values.
@@ -22,7 +23,8 @@ const categoryIcons = {
   Category.travel: Icons.flight_takeoff_rounded,
   Category.entertainment: Icons.movie_filter,
   Category.medical: Icons.medical_services,
-  Category.misc: Icons.miscellaneous_services_outlined
+  Category.misc: Icons.miscellaneous_services_outlined,
+  Category.education: Icons.school_rounded
 };
 
 class Expense {
@@ -60,7 +62,7 @@ class ChartBucket {
             .toList();
 // checks and filters according to the category,if the selected category by user is equal to the category in the chart then it gets added to the category in the chart, if the condition becomes false then it checks for other.
 
-  double get totlaExpense {
+  double get totalExpense {
     double sum = 0;
     for (final expense in expenses) {
       sum += expense.amount;

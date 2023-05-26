@@ -1,4 +1,5 @@
 import 'package:expenses_tracker_app/models/expense_model.dart';
+import 'package:expenses_tracker_app/widgets/chart/chart.dart';
 import 'package:expenses_tracker_app/widgets/expense_list_widget.dart';
 import 'package:expenses_tracker_app/widgets/input_modal_widget.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +86,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       ),
       body: Column(
         children: [
-          const Text("Expenses Chart"),
+          Chart(expenses: _savedExpense),
           Expanded(
             child: _savedExpense.isEmpty
                 ? const Center(

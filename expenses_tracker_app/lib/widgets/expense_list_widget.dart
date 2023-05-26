@@ -10,7 +10,7 @@ class ExpensesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    expenses.sort((b, a) => a.amount.compareTo(b.amount));
+    expenses.sort((b, a) => a.title.compareTo(b.title));
     return ListView.builder(
       itemCount: expenses.length,
       itemBuilder: (context, index) {

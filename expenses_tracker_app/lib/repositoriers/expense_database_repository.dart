@@ -1,3 +1,4 @@
+import 'package:expenses_tracker_app/models/expense_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -5,7 +6,9 @@ import 'package:path_provider/path_provider.dart';
 import '../models/table_constant_model.dart';
 
 class ExpenseDatabaseRepository {
-  //static final ExpenseDatabaseRepository instance = ExpenseDatabaseRepository._init();
+  static final ExpenseDatabaseRepository instance =
+      ExpenseDatabaseRepository._init();
+  ExpenseDatabaseRepository._init(); // singleton
 
   static Database? _database;
   // ExpenseDatabase._init();
@@ -38,5 +41,38 @@ class ExpenseDatabaseRepository {
       ${TableConstants.date} TEXT,
       ${TableConstants.category} TEXT
     )''');
+  }
+
+  // add expense to database
+  Future<void> insert({required Expense expense}) async {
+    try {
+      final db = await database;
+      db!.insert(TableConstants.tableName, expense.toMap());
+      print(expense.category.toString());
+      print(" Expense added");
+    } catch (e) {
+      print("The exception is $e");
+    }
+  }
+
+  // Get all expense list
+
+  Future<List<Expense>> getAllExpenses() async {
+    final db = await instance.database;
+
+    final result = await db!.query(TableConstants.tableName);
+    return List.generate(result.length, (i) => Expense.fromMap(result[i]));
+  }
+
+  // To delete an item
+
+  Future<void> deleteItem(int id) async {
+    try {
+      final db = await instance.database;
+      db!.delete(TableConstants.tableName,
+          where: '${TableConstants.id} = ?', whereArgs: [id]);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

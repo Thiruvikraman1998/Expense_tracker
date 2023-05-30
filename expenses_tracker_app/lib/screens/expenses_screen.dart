@@ -1,4 +1,5 @@
 import 'package:expenses_tracker_app/models/expense_model.dart';
+import 'package:expenses_tracker_app/repositoriers/expense_database_repository.dart';
 import 'package:expenses_tracker_app/widgets/chart/chart.dart';
 import 'package:expenses_tracker_app/widgets/chips.dart';
 import 'package:expenses_tracker_app/widgets/expense_item_widget.dart';
@@ -15,15 +16,51 @@ class ExpenseScreen extends StatefulWidget {
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
   final List<Expense> _savedExpense = [];
+  List<Expense> myExpenses = [];
 
   final List chipItems = ["All", "Category", "Date", "Custom sort"];
+
+  void getExpenses() async {
+    await ExpenseDatabaseRepository.instance.getAllExpenses().then((value) {
+      setState(() {
+        myExpenses = value;
+      });
+    }).catchError((e) => debugPrint(e.toString()));
+    print(myExpenses.length);
+  }
+
+  void delete({required Expense expense, required BuildContext context}) async {
+    await ExpenseDatabaseRepository.instance
+        .deleteItem(expense.id!)
+        .then((value) {
+      final expenseId = myExpenses.indexOf(expense);
+      print(expenseId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Expense deleted"),
+          action: SnackBarAction(
+            label: 'undo',
+            onPressed: () {
+              setState(
+                () {
+                  myExpenses.insert(expenseId, expense);
+                },
+              );
+            },
+          ),
+        ),
+      );
+    });
+  }
 
   void _openInputFields() {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (modalSheetContext) {
-        return InputModalView(saveExpenseData: _addExpensesData);
+        return InputModalView(
+          saveExpenseData: _addExpensesData,
+        );
       },
     );
   }
@@ -35,25 +72,36 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     Navigator.pop(context);
   }
 
-  void _removeExpenseData(Expense expense) {
-    final expenseIndex = _savedExpense.indexOf(expense);
-    setState(() {
-      _savedExpense.remove(expense);
-    });
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text("Expense deleted"),
-        action: SnackBarAction(
-          label: 'undo',
-          onPressed: () {
-            setState(() {
-              _savedExpense.insert(expenseIndex, expense);
-            });
-          },
-        ),
-      ),
-    );
+  // void _removeExpenseData(Expense expense) {
+  //   final expenseIndex = _savedExpense.indexOf(expense);
+  //   setState(() {
+  //     _savedExpense.remove(expense);
+  //   });
+  //   ScaffoldMessenger.of(context).clearSnackBars();
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: const Text("Expense deleted"),
+  //       action: SnackBarAction(
+  //         label: 'undo',
+  //         onPressed: () {
+  //           setState(() {
+  //             _savedExpense.insert(expenseIndex, expense);
+  //           });
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  void initDB() async {
+    await ExpenseDatabaseRepository.instance.database;
+  }
+
+  @override
+  void initState() {
+    initDB();
+    getExpenses();
+    super.initState();
   }
 
   @override
@@ -73,23 +121,12 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             ],
             expandedHeight: 300,
             flexibleSpace: FlexibleSpaceBar(
-              background: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 20),
-                    child: const Column(
-                      children: [
-                        Text("Total expenses this month"),
-                        SizedBox(height: 10),
-                        Text("2458.20")
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
+                background: Container(
+              margin: const EdgeInsets.only(top: 60),
+              height: 100,
+              width: double.infinity,
+              child: Chart(expenses: myExpenses),
+            )),
           ),
           SliverToBoxAdapter(
               child: SingleChildScrollView(
@@ -109,7 +146,12 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             ),
           )),
           ExpensesList(
-              expenses: _savedExpense, removeListItem: _removeExpenseData)
+            expenses: myExpenses,
+            deleteItem: (expense) {
+              delete(expense: expense, context: context);
+              getExpenses();
+            },
+          )
         ],
       ),
     );

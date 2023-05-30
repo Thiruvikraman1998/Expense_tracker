@@ -1,4 +1,5 @@
 import 'package:expenses_tracker_app/models/expense_model.dart';
+import 'package:expenses_tracker_app/repositoriers/expense_database_repository.dart';
 import 'package:flutter/material.dart';
 
 class InputModalView extends StatefulWidget {
@@ -44,7 +45,7 @@ class _InputModalViewState extends State<InputModalView> {
     super.dispose();
   }
 
-  void _validationSubmission() {
+  void _validationSubmission() async {
     final _enteredAmount = double.tryParse(_amountController.text);
     final invalidAmount = _enteredAmount == null || _enteredAmount <= 0;
 
@@ -71,11 +72,17 @@ class _InputModalViewState extends State<InputModalView> {
       );
       return;
     }
-    widget.saveExpenseData(Expense(
+    Expense newExpense = Expense(
         title: _titleController.text,
         amount: _enteredAmount,
         date: _selectedDate!,
-        category: _selectedCategory));
+        category: _selectedCategory);
+    await ExpenseDatabaseRepository.instance.insert(expense: newExpense);
+    // widget.saveExpenseData(Expense(
+    //     title: _titleController.text,
+    //     amount: _enteredAmount,
+    //     date: _selectedDate!,
+    //     category: _selectedCategory));
   }
 
   @override
@@ -161,7 +168,10 @@ class _InputModalViewState extends State<InputModalView> {
                     child: const Text("Cancel"),
                   ),
                   ElevatedButton(
-                    onPressed: _validationSubmission,
+                    onPressed: () {
+                      _validationSubmission();
+                      Navigator.pop(context);
+                    },
                     child: const Text("Save Data"),
                   )
                 ],

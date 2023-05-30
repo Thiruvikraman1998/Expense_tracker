@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:expenses_tracker_app/models/table_constant_model.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
@@ -30,19 +31,20 @@ const categoryIcons = {
 };
 
 class Expense {
-  final String id;
+  final int? id;
   final String title;
   final double amount;
   final DateTime date;
-  final Category category;
+  Category category;
 
   Expense(
-      {required this.title,
+      {this.id,
+      required this.title,
       required this.amount,
       required this.date,
-      required this.category})
-      : id = uuid
-            .v4(); // values after the constructor is a initializer, which is often used when we dont want to get value from constructor. this is commonly used when we generate unique id's like this.
+      required this.category});
+  // : id = uuid
+  //       .v4(); // values after the constructor is a initializer, which is often used when we dont want to get value from constructor. this is commonly used when we generate unique id's like this.
 
   String get formattedDate {
     return formatter.format(date);
@@ -51,7 +53,7 @@ class Expense {
   // Named constructor for getting from map and converting it to data model.
 
   factory Expense.fromMap(Map<String, dynamic> map) {
-    final id = map['id'] as String;
+    final id = map['id'];
     final title = map['title'] as String;
     final amount = map['amount'] as double;
     final date = DateTime.parse(map['date'] as String);
@@ -60,18 +62,18 @@ class Expense {
         Category.values.firstWhere((c) => c.toString() == categoryString);
 
     return Expense(
-        title: title, amount: amount, date: date, category: category);
+        id: id, title: title, amount: amount, date: date, category: category);
   }
 
   // method to convert data object to map
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'title': title,
-      'amount': amount,
-      'date': date,
-      'category': category
+      TableConstants.id: id,
+      TableConstants.title: title,
+      TableConstants.amount: amount,
+      TableConstants.date: date.toIso8601String(),
+      TableConstants.category: category.toString()
     };
   }
 }

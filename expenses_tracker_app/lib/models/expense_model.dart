@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
@@ -45,6 +47,33 @@ class Expense {
   String get formattedDate {
     return formatter.format(date);
   } // we can use method getter, anything is fine in this case.
+
+  // Named constructor for getting from map and converting it to data model.
+
+  factory Expense.fromMap(Map<String, dynamic> map) {
+    final id = map['id'] as String;
+    final title = map['title'] as String;
+    final amount = map['amount'] as double;
+    final date = DateTime.parse(map['date'] as String);
+    final categoryString = map['category'] as String;
+    final category =
+        Category.values.firstWhere((c) => c.toString() == categoryString);
+
+    return Expense(
+        title: title, amount: amount, date: date, category: category);
+  }
+
+  // method to convert data object to map
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'amount': amount,
+      'date': date,
+      'category': category
+    };
+  }
 }
 
 // creating a new class to work with charts
